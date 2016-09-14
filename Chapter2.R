@@ -90,6 +90,8 @@ dag3 <- set.arc(dag3, 'ALG', 'VECT')
 dag3 <- set.arc(dag3, 'ANL', 'ALG')
 dag3 <- set.arc(dag3, 'STAT', 'ALG')
 dag3 <- set.arc(dag3, 'STAT', 'ANL')
+
+# Note: can also use drop.arc and rev.arc for arc manipulation.
  
 # Check equivalence. 
 all.equal(dag, dag3)
@@ -114,7 +116,102 @@ mb(dag, "ANL")
 'ANL' %in% mb(dag, 'ALG')
 'ALG' %in% mb(dag, 'ANL')
 
-# update
+# Use children() to find children of a node, parents() to find parents.
+chld = children(dag, 'VECT')
+pars = parents(dag, 'VECT')
+
+# Find children's other parents,
+o.par = sapply(chld, parents, x = dag)
+unique(c(chld, pars, o.par[o.par != 'VECT']))
+
+# As a check:
+mb(dag, 'VECT')
+
+# Log-likelihood scoring criteria of Bayesian network:
+score(dag, data = marks, type = 'loglik-g')
+# Reverse arc and score() again.
+dag.eq = reverse.arc(dag, 'STAT', 'ANL')
+score(dag, data = marks, type = 'loglik-g')
+# Since arc STAT <-> ANL doesn't belong to a v-structure, score is the same.
+
+# Look at the v-structures of dag and dag.eq.
+vstructs(dag)
+vstructs(dag.eq)
+
+# Moral v-structures: parents of v-structure linked by an arc. 
+#(Koller & Friedman, 2009)
+# Can also show equivalence with:
+all.equal(cpdag(dag), cpdag(dag.eq))
+all.equal(moral(dag), moral(dag.eq))
+
+# All examples can be similarly implemented in other packages. 
+# Let's look at the package 'deal'. 
+library(deal)
+
+# Create the network. 
+deal.net = network(marks)
+
+# Examine. 
+deal.net
+
+# It's a bit more difficult to specify the DAG in 'deal'. Must use
+# string representation. 
+m = paste('[MECH] [VECT|MECH] [ALG|MECH:VECT]', '[ANL|ALG] [STAT|ALG:ANL]', 
+          sep = "")
+deal.net = as.network(m, deal.net)
+deal.net
+
+# Skipping ahead to structure learning (when network structure must be learned
+# from data).
+
+# Using the Grow-Shrink implementation from bnlearn:
+bn.gs = gs(marks)
+bn.gs
+# Results are slightly different than those from the book...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
