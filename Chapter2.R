@@ -94,14 +94,27 @@ dag3 <- set.arc(dag3, 'STAT', 'ANL')
 # Check equivalence. 
 all.equal(dag, dag3)
 
-?moral
+# Graphs will be directed unless check.cycles = F.
 
+# Check that moral graph of dag and ug are equivalent. 
+all.equal(ug, moral(dag))
 
+# Check the topological ordering of the nodes.
+node.ordering(dag)
 
+# Check the neighborhood of the node "ANL."
+nbr(dag, "ANL")
 
+# Check the Markov blanket of "ANL."
+# (Set of parents of "ANL.")
+mb(dag, "ANL")
 
+# If 'ALG' is in the Markov blanket of 'ANL' and 'ANL' is in the Markov 
+# blanket of 'ALG', both sets describe symmetric relationships.
+'ANL' %in% mb(dag, 'ALG')
+'ALG' %in% mb(dag, 'ANL')
 
-
+# update
 
 
 
