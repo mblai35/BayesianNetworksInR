@@ -50,23 +50,12 @@ prob.list.file <- paste(output.folder, "/NetworkProbability_List.txt",
 # Read in NetworkProbability_List.txt.
 prob.list <- read.table(prob.list.file, header = T)
 
+# Find genes with a probability greater than .8 from the Probability
+# column (3rd column).
+above.08 <- (prob.list[, 3] > 0.8)
 
+# Print out genes where the probability is greater than .8.
+print(prob.list[above.08, ])
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# File can then be used for further analysis--using cytoscape, 
+# for example.
