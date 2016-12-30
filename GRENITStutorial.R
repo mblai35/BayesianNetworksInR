@@ -20,7 +20,7 @@ output.folder <- paste(tempdir(), "/Example_LinearNet", sep = "")
 # Run MCMC function; 2 chains, default parameters
 LinearNet(output.folder, Athaliana_ODE)
 
-# Analys raw results, place analysis plots and files in output.folder
+# Analyse raw results, place analysis plots and files in output.folder
 analyse.output(output.folder)
 
 # View contents of output.folder
