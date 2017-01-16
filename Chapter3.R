@@ -13,7 +13,8 @@ install.packages("lars")
 library(lars)
 install.packages("GeneNet")
 library(GeneNet)
-
+install.packages("simone")
+library(simone)
 #-----------------------------------------------------------------------
 
 # 3.5.1 Multivariate Time Series Analysis
@@ -62,20 +63,36 @@ data(arth800)
 
 # Subset the data. 
 subset <- c(60, 141, 260, 333, 365, 424, 441, 512, 521, 789, 799)
+# 11 time points with repeated measurements for each time point. 
 arth12 <- arth800.expr[, subset]
 
+# Specify vector x of predictors. Remove last two measurements 
+# from x due to lack of corresponding time points in x and y.
+x <- arth12[1: (nrow(arth12) - 2), ]
+# Specify vector y of possible parents. Remove first time point from y
+# due to lack of corresponding time points in x and y. 
+y <- arth12[-(1:2), "265768_at"]
 
-str(arth12)
+lasso.fit <- lars(y=y, x=x, type = "lasso")
 
+# Simone package:
+# Model estimation performed using simone function w/o clustering. 
+simone(arth12, type = "time-course")
 
+# Simone function with clustering. 
+ctrl <- setOptions(clusters.crit = "BIC")
+simone(arth12, type = "time-course", clustering = T, control =ctrl)
 
-
-
+# Plot
+plot(simone(arth12, type = "time-course", clustering = T, control =ctrl))
 
 
 # Exercises: 
 data("Canada")
 
 
-
-
+variance = diag(var(arth800.expr))
+plot(sort(variance, decreasing = T), type = "l", ylab = "Variance")
+abline(h = 2, lty = 2)
+posVar2 <- which(variance > 2)
+dataVar2 <- arth800.expr[, posVar2]
