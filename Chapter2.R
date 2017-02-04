@@ -1,5 +1,5 @@
 # Chapter2.R
-# R version 3.2.2 (2015-08-14)
+# R version 3.3.1 (2016-06-21) -- "Bug in Your Hair"
 # September 6, 2016. Mallory B. Lai.
 # Reviewed by: TODO (Mallory B. Lai) : Find reviewer to proofread
 # Code following Chapter 2 from Bayesian Networks in R.
@@ -170,15 +170,42 @@ bn.gs
 # Results are slightly different than those from the book...
 
 
+# 2.5 Applications to Gene Expression Profiles
+dsachs = discretize(sachs, method = "hartemink", breaks = 3, ibreaks = 60,
+                    idisc = "quantile")
+
+boot = boot.strength(data = dsachs, R = 500, algorithm = "hc", 
+                     algorithm.args = list(score = "bde", iss = 10))
+
+boot[(boot$strength > 0.85) & (boot$direction >= 0.5), ]
 
 
+isachs <- read.table(file.choose(), header = T, colClasses = "factor")
+
+wh = matrix(c(rep("INT", 11), names(isachs)[1:11]), ncol = 2)
+bn.wh = tabu(isachs, whitelist = wh, score = "bde",
+              iss = 10, tabu = 50)
+
+tiers = list("INT", names(isachs)[1:11])
+bl = tiers2blacklist(nodes = tiers)
+bn.tiers = tabu(isachs, blacklist = bl,
+                 score = "bde", iss = 10, tabu = 50)
 
 
+INT = sapply(1:11, function(x) {
+  which(isachs$INT == x) })
+isachs = isachs[, 1:11]
+nodes = names(isachs)
+names(INT) = nodes
 
-
-
-
-
+start = random.graph(nodes = nodes,
+                     method = "melancon", num = 200, burn.in = 10^5,
+                    every = 100)
+netlist = lapply(start, function(net) {
+  tabu(isachs, score = "mbde", exp = INT,
+        iss = 1, start = net, tabu = 50) })
+arcs = custom.strength(netlist, nodes = nodes, cpdag = FALSE)
+bn.mbde = averaged.network(arcs, threshold = 0.85)
 
 
 
