@@ -260,23 +260,6 @@ library(bnlearn)
     # Prob: TOFLOAT( line.Probability), 
     # Strength: TOFLOAT(line.Strength)}]->(b);
     
-library(igraph)
-library(visNetwork)
-library(RNeo4j)
-    
-graph = startGraph("http://localhost:7474/db/data/", username = "neo4j",
-                       password = "plantanalytics")
-
-query = "
-MATCH (n)-[]-(m)
-WHERE n.name < {x}
-RETURN n, m
-"
-
-edges <- cypher(graph, query, x = "A")
-
-head(edges)
-
 
 
 
